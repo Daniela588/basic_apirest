@@ -11,8 +11,63 @@ mysqlConnection.query("SELECT * FROM city",(err,rows,fileds)=>{
         res.json(rows);
 
     }
+})
 });
-});
+router.get('/languageByCountry/:continent',(req,res)=>{
+    const{continent}=req.params;
+    mysqlConnection.query("SELECT countrylanguage.*, country.Continent FROM countrylanguage JOIN country ON countrylanguage.CountryCode =country.Code WHERE country.Continent = ?",[continent],(err,rows,fileds)=>{
+        if(err){
+            console.log("error: ",err);
+        }else{
+            res.json(rows);
+    
+        }
+    })
+    });
+    router.get('/nameByCountry/:continent',(req,res)=>{
+        const{continent}=req.params;
+    mysqlConnection.query("SELECT country.Name, country.Continent, country.Region, country.IndepYear FROM country WHERE country.Continent = ? ORDER BY country.IndepYear DESC",[continent],(err,rows,fileds)=>{
+        if(err){
+            console.log("error: ",err);
+        }else{
+            res.json(rows);
+    
+        }
+    })
+    });
+    router.get('/promedioByCountry/:continent',(req,res)=>{
+        const{continent}=req.params;
+    mysqlConnection.query("SELECT country.Continent , AVG (country.Population) AS promedio FROM country WHERE country.Continent = ?",[continent],(err,rows,fileds)=>{
+        if(err){
+            console.log("error: ",err);
+        }else{
+            res.json(rows);
+    
+        }
+    })
+    });
+    router.get('/cityByCountry/:continent',(req,res)=>{
+        const{continent}=req.params;
+    mysqlConnection.query("SELECT city.* FROM city WHERE city.population=(SELECT MAX(population) FROM city)",[continent],(err,rows,fileds)=>{
+        if(err){
+            console.log("error: ",err);
+        }else{
+            res.json(rows);
+    
+        }
+    })
+    });
+    router.get('/zaByCountry/:continent',(req,res)=>{
+       const{continent}=req.params;
+    mysqlConnection.query("SELECT country.Name, city.Name FROM country JOIN city ON country.Code = city.CountryCode WHERE city.Name LIKE '%"+continent+"%'",(err,rows,fileds)=>{
+        if(err){
+            console.log("error: ",err);
+        }else{
+            res.json(rows);
+    
+        }
+    })
+    });
 
 router.post('/',(req,res)=>{
     const{Name,CountryCode,District,Population}=req.body;
